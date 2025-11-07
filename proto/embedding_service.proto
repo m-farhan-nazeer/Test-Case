@@ -1,0 +1,63 @@
+syntax = "proto3";
+
+package embedding_service;
+
+// Embedding service for text processing
+service EmbeddingService {
+    // Process text and create embeddings
+    rpc ProcessText(ProcessTextRequest) returns (ProcessTextResponse);
+    
+    // Batch process multiple texts
+    rpc BatchProcessText(BatchProcessTextRequest) returns (BatchProcessTextResponse);
+    
+    // Get supported models
+    rpc GetSupportedModels(GetSupportedModelsRequest) returns (GetSupportedModelsResponse);
+}
+
+message ProcessTextRequest {
+    string text = 1;
+    string model = 2;
+    bool normalize = 3;
+}
+
+message ProcessTextResponse {
+    repeated float embedding = 1;
+    int32 dimensions = 2;
+    string model = 3;
+    int64 processing_time_ms = 4;
+    TextMetadata metadata = 5;
+}
+
+message BatchProcessTextRequest {
+    repeated string texts = 1;
+    string model = 2;
+    bool normalize = 3;
+    int32 batch_size = 4;
+}
+
+message BatchProcessTextResponse {
+    repeated ProcessTextResponse embeddings = 1;
+    int64 total_processing_time_ms = 2;
+    int32 processed_count = 3;
+}
+
+message TextMetadata {
+    int32 token_count = 1;
+    int32 character_count = 2;
+    string language = 3;
+    repeated string keywords = 4;
+}
+
+message GetSupportedModelsRequest {}
+
+message GetSupportedModelsResponse {
+    repeated ModelInfo models = 1;
+}
+
+message ModelInfo {
+    string name = 1;
+    int32 dimensions = 2;
+    string description = 3;
+    bool local = 4;
+    string provider = 5;
+}

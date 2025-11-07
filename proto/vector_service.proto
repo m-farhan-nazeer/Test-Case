@@ -1,0 +1,72 @@
+syntax = "proto3";
+
+package vector_service;
+
+// Vector service for embedding operations
+service VectorService {
+    // Create embeddings for text
+    rpc CreateEmbedding(CreateEmbeddingRequest) returns (CreateEmbeddingResponse);
+    
+    // Perform similarity search
+    rpc SimilaritySearch(SimilaritySearchRequest) returns (SimilaritySearchResponse);
+    
+    // Store document embedding
+    rpc StoreEmbedding(StoreEmbeddingRequest) returns (StoreEmbeddingResponse);
+    
+    // Get vector statistics
+    rpc GetVectorStats(VectorStatsRequest) returns (VectorStatsResponse);
+}
+
+message CreateEmbeddingRequest {
+    string text = 1;
+    string model = 2;
+}
+
+message CreateEmbeddingResponse {
+    repeated float embedding = 1;
+    int32 dimensions = 2;
+    string model = 3;
+    int64 processing_time_ms = 4;
+}
+
+message SimilaritySearchRequest {
+    repeated float query_embedding = 1;
+    float threshold = 2;
+    int32 limit = 3;
+}
+
+message SimilaritySearchResponse {
+    repeated SearchResult results = 1;
+    int32 total_results = 2;
+    int64 search_time_ms = 3;
+}
+
+message SearchResult {
+    int32 document_id = 1;
+    string content = 2;
+    float similarity_score = 3;
+    map<string, string> metadata = 4;
+}
+
+message StoreEmbeddingRequest {
+    int32 document_id = 1;
+    string content = 2;
+    repeated float embedding = 3;
+    map<string, string> metadata = 4;
+}
+
+message StoreEmbeddingResponse {
+    int32 embedding_id = 1;
+    bool success = 2;
+    string message = 3;
+}
+
+message VectorStatsRequest {}
+
+message VectorStatsResponse {
+    int64 total_embeddings = 1;
+    int32 vector_dimensions = 2;
+    string index_type = 3;
+    map<string, string> index_parameters = 4;
+    float database_size_mb = 5;
+}
